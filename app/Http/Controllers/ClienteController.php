@@ -10,6 +10,7 @@ class ClienteController extends Controller
 {
     public function index(Request $request)
     {
+        // opcional: búsqueda por ?search=
         $search = trim((string) $request->query('search', ''));
 
         $q = Cliente::query();
@@ -20,10 +21,10 @@ class ClienteController extends Controller
                 ->orWhere('email_cliente', 'ilike', "%{$search}%");
         }
 
-        // paginado simple
-        $clientes = $q->orderBy('nombre_cliente')->paginate(10);
-
-        return response()->json($clientes);
+        // puedes devolver todo (simple) o paginado
+        return response()->json([
+            'data' => $q->orderBy('nombre_cliente')->get()
+        ]);
     }
 
     public function show(string $cedula)
@@ -34,18 +35,18 @@ class ClienteController extends Controller
             return response()->json(['message' => 'Cliente no encontrado'], 404);
         }
 
-        return response()->json($cliente);
+        return response()->json(['data' => $cliente]);
     }
 
     public function store(Request $request)
     {
         $v = Validator::make($request->all(), [
-            'cedula_cliente' => ['required', 'string', 'max:20'],
-            'nombre_cliente' => ['required', 'string', 'max:200'],
-            'email_cliente' => ['required', 'email', 'max:200'],
-            'sexo_cliente' => ['nullable', 'in:M,F,O'],
-            'direccion_cliente' => ['nullable', 'string', 'max:255'],
-            'numero_telefono_cliente' => ['nullable', 'string', 'max:30'],
+            'cedula_cliente'          => ['required', 'string', 'size:10'],
+            'nombre_cliente'          => ['required', 'string', 'max:100'],
+            'email_cliente'           => ['nullable', 'email', 'max:100'],
+            'sexo_cliente'            => ['nullable', 'in:M,F,O'],
+            'direccion_cliente'       => ['nullable', 'string', 'max:150'],
+            'numero_telefono_cliente' => ['nullable', 'string', 'max:20'],
         ]);
 
         if ($v->fails()) {
@@ -55,7 +56,7 @@ class ClienteController extends Controller
             ], 422);
         }
 
-        // evitar duplicado por PK
+        // PK duplicada
         if (Cliente::find($request->cedula_cliente)) {
             return response()->json(['message' => 'Ya existe un cliente con esa cédula'], 409);
         }
@@ -64,7 +65,7 @@ class ClienteController extends Controller
 
         return response()->json([
             'message' => 'Cliente creado',
-            'cliente' => $cliente,
+            'data' => $cliente,
         ], 201);
     }
 
@@ -77,11 +78,12 @@ class ClienteController extends Controller
         }
 
         $v = Validator::make($request->all(), [
-            'nombre_cliente' => ['sometimes', 'required', 'string', 'max:200'],
-            'email_cliente' => ['sometimes', 'required', 'email', 'max:200'],
-            'sexo_cliente' => ['sometimes', 'nullable', 'string', 'max:20'],
-            'direccion_cliente' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'numero_telefono_cliente' => ['sometimes', 'nullable', 'string', 'max:30'],
+            // cedula_cliente NO se actualiza (es PK)
+            'nombre_cliente'          => ['sometimes', 'required', 'string', 'max:100'],
+            'email_cliente'           => ['sometimes', 'nullable', 'email', 'max:100'],
+            'sexo_cliente'            => ['sometimes', 'nullable', 'in:M,F,O'],
+            'direccion_cliente'       => ['sometimes', 'nullable', 'string', 'max:150'],
+            'numero_telefono_cliente' => ['sometimes', 'nullable', 'string', 'max:20'],
         ]);
 
         if ($v->fails()) {
@@ -96,7 +98,7 @@ class ClienteController extends Controller
 
         return response()->json([
             'message' => 'Cliente actualizado',
-            'cliente' => $cliente,
+            'data' => $cliente,
         ]);
     }
 
