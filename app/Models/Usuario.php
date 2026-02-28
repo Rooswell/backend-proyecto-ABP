@@ -11,7 +11,7 @@ class Usuario extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    public $timestamps = false; // por si tu tabla no tiene created_at/updated_at
+    public $timestamps = false;
 
     protected $fillable = [
         'cedula_usuario',
@@ -20,10 +20,9 @@ class Usuario extends Model
         'contrasena',
         'sexo',
         'numero_telefono_usuario',
-        'estado',
-    ];
+        'estado'    ];
 
     protected $hidden = [
-        'contrasena',
+        'contrasena'
     ];
 }
