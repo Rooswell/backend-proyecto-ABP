@@ -44,7 +44,6 @@ class OrdenServicioController extends Controller
         );
     }
 
-    // ✅ AHORA BUSCA POR ID
     public function show(int $id)
     {
         $orden = OrdenServicio::with(['cliente', 'usuario'])
@@ -53,7 +52,6 @@ class OrdenServicioController extends Controller
         return response()->json($orden);
     }
 
-    // ✅ AHORA BUSCA POR ID
     public function update(UpdateOrdenServicioRequest $request, int $id)
     {
         $orden = OrdenServicio::findOrFail($id);
@@ -64,7 +62,6 @@ class OrdenServicioController extends Controller
         );
     }
 
-    // ✅ AHORA BUSCA POR ID
     public function destroy(int $id)
     {
         OrdenServicio::findOrFail($id)->delete();
