@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\Api\OrdenServicioController;
 use App\Http\Controllers\Api\HorarioController;
 
@@ -27,6 +28,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('usuarios', UsuarioController::class)
         ->parameters(['usuarios' => 'cedula']);
 
+    Route::apiResource('empleados', EmpleadoController::class)
+        ->parameters(['empleados' => 'cedula']);
+        
     Route::apiResource('ordenes-servicio', OrdenServicioController::class)
     ->parameters(['ordenes-servicio' => 'id']);
 
